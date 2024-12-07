@@ -9,34 +9,50 @@ class MemoryTraining extends StatefulWidget {
 }
 
 class _MemoryTrainingState extends State<MemoryTraining> {
-  List<bool> gridStatus = List.generate(9, (_) => false); // 3x3 grid (9 tiles)
+  List<bool> gridStatus = List.generate(16, (_) => false); // 4x4 grid (16 tiles)
   List<int> sequence = [];
   int currentStep = 0;
-  final int sequenceLength = 5;
+  int sequenceLength = 5;
+  bool showDialogFirstTime = true;
 
   @override
   void initState() {
     super.initState();
     generateUniqueRandomSequence();
+    Future.delayed(Duration.zero, showIntroductionDialog);
   }
 
   void generateUniqueRandomSequence() {
     final random = Random();
-    List<int> allIndices = List.generate(9, (index) => index)..shuffle(random);
 
     setState(() {
-      sequence = allIndices.sublist(0, sequenceLength);
+      sequence = List.generate(sequenceLength, (_) => random.nextInt(16));
       currentStep = 0;
-      gridStatus = List.generate(9, (_) => false);
+      gridStatus = List.generate(16, (_) => false);
     });
 
     debugPrint('Generated Sequence: $sequence');
     assert(sequence.length == sequenceLength, 'Sequence length is incorrect!');
   }
 
+  Future<void> showSequence() async {
+    for (int i = 0; i < sequence.length; i++) {
+      setState(() {
+        gridStatus = List.generate(16, (_) => false);
+        gridStatus[sequence[i]] = true;
+      });
+      await Future.delayed(const Duration(milliseconds: 500));
+      setState(() {
+        gridStatus[sequence[i]] = false;
+      });
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+  }
+
   void handleTileTap(int index) {
     setState(() {
       if (currentStep < sequence.length && index == sequence[currentStep]) {
+        gridStatus = List.generate(16, (_) => false);
         gridStatus[index] = true;
         currentStep++;
 
@@ -57,37 +73,80 @@ class _MemoryTrainingState extends State<MemoryTraining> {
 
   void resetGrid() {
     setState(() {
-      gridStatus = List.generate(9, (_) => false);
+      gridStatus = List.generate(16, (_) => false);
       currentStep = 0;
     });
+  }
+
+  void showIntroductionDialog() {
+    if (showDialogFirstTime) {
+      showDialog(
+        context: context,
+        barrierDismissible: false, // Prevents dialog from being dismissed by tapping outside
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Welcome to Cogmed Memory Exercise"),
+            content: const Text(
+                "The game will display a sequence of highlighted tiles. "
+                "Remember the sequence and tap the tiles in the same order. "
+                "Good luck!"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("Proceed"),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await Future.delayed(const Duration(seconds: 1));
+                  showSequence();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      showDialogFirstTime = false;
+    } else {
+      showSequence();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cogmed Memory Exercise - 3x3"),
+        title: const Text("Cogmed Memory Exercise - 4x4"),
         centerTitle: true,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(8.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 4.0,
-                mainAxisSpacing: 4.0,
-              ),
-              itemCount: 9,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => handleTileTap(index),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: gridStatus[index] ? Colors.green : Colors.blueGrey,
-                      borderRadius: BorderRadius.circular(4.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                double gridSize = min(constraints.maxWidth, constraints.maxHeight) * 0.8;
+
+                return Center(
+                  child: SizedBox(
+                    width: gridSize,
+                    height: gridSize,
+                    child: GridView.builder(
+                      padding: const EdgeInsets.all(8.0),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        crossAxisSpacing: 4.0,
+                        mainAxisSpacing: 4.0,
+                      ),
+                      itemCount: 16,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () => handleTileTap(index),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: gridStatus[index] ? Colors.green : Colors.blueGrey,
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 );
@@ -96,9 +155,48 @@ class _MemoryTrainingState extends State<MemoryTraining> {
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: generateUniqueRandomSequence,
-              child: const Text("Generate New Sequence"),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.remove),
+                      onPressed: () {
+                        if (sequenceLength > 3) {
+                          setState(() {
+                            sequenceLength--;
+                          });
+                        }
+                      },
+                    ),
+                    Text(
+                      'Difficulty: $sequenceLength',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        if (sequenceLength < 10) {
+                          setState(() {
+                            sequenceLength++;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    generateUniqueRandomSequence();
+                    showSequence();
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text("Generate New Sequence"),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
         ],
@@ -107,4 +205,11 @@ class _MemoryTrainingState extends State<MemoryTraining> {
   }
 }
 
-void main() => runApp(const MaterialApp(home: MemoryTraining()));
+void main() => runApp(MaterialApp(
+  home: const MemoryTraining(),
+  debugShowCheckedModeBanner: false, // Hide debug banner
+  theme: ThemeData(
+    primarySwatch: Colors.blue,
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+  ),
+));
