@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'memory_training.dart'; // Import your MemoryTraining page here
 
 class ProgressiveMuscleRelaxation extends StatefulWidget {
   const ProgressiveMuscleRelaxation({super.key});
@@ -13,6 +14,7 @@ class _ProgressiveMuscleRelaxationState
     extends State<ProgressiveMuscleRelaxation> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isPlaying = false;
+  bool _showNextExerciseButton = false;
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = Duration.zero;
 
@@ -35,8 +37,29 @@ class _ProgressiveMuscleRelaxationState
       setState(() {
         _isPlaying = false;
         _currentPosition = Duration.zero;
+        _showNextExerciseButton = true; // Show the next exercise button
       });
+
+      _showCompletionNotification();
     });
+  }
+
+  void _showCompletionNotification() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Good Job!'),
+          content: const Text("Let's go to the next exercise."),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -76,6 +99,15 @@ class _ProgressiveMuscleRelaxationState
     return "$minutes:$seconds";
   }
 
+  void _navigateToMemoryTraining() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MemoryTraining(), // Navigate to the correct page
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,6 +140,12 @@ class _ProgressiveMuscleRelaxationState
               '${_formatDuration(_currentPosition)} / ${_formatDuration(_totalDuration)}',
               style: const TextStyle(fontSize: 16),
             ),
+            const SizedBox(height: 16),
+            if (_showNextExerciseButton) // Conditionally show the button
+              ElevatedButton(
+                onPressed: _navigateToMemoryTraining,
+                child: const Text("Go to Memory Training"),
+              ),
             const SizedBox(height: 16),
             const Text(
               "Use the controls to play, pause, reset, or navigate the Progressive Muscle Relaxation audio.",

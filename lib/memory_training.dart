@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'physical_practice.dart'; // Import the PhysicalPractice page
 
 class MemoryTraining extends StatefulWidget {
   const MemoryTraining({super.key});
@@ -14,6 +15,7 @@ class _MemoryTrainingState extends State<MemoryTraining> {
   int currentStep = 0;
   int sequenceLength = 5;
   bool showDialogFirstTime = true;
+  bool showNextButton = false; // Control visibility of the next button
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _MemoryTrainingState extends State<MemoryTraining> {
       sequence = List.generate(sequenceLength, (_) => random.nextInt(16));
       currentStep = 0;
       gridStatus = List.generate(16, (_) => false);
+      showNextButton = false; // Reset next button visibility
     });
 
     debugPrint('Generated Sequence: $sequence');
@@ -60,6 +63,9 @@ class _MemoryTrainingState extends State<MemoryTraining> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Good Job! Sequence completed!")),
           );
+          setState(() {
+            showNextButton = true; // Show the button upon success
+          });
           resetGrid();
         }
       } else if (currentStep < sequence.length) {
@@ -88,8 +94,8 @@ class _MemoryTrainingState extends State<MemoryTraining> {
             title: const Text("Welcome to Cogmed Memory Exercise"),
             content: const Text(
                 "The game will display a sequence of highlighted tiles. "
-                "Remember the sequence and tap the tiles in the same order. "
-                "Good luck!"),
+                    "Remember the sequence and tap the tiles in the same order. "
+                    "Good luck!"),
             actions: <Widget>[
               TextButton(
                 child: const Text("Proceed"),
@@ -107,6 +113,24 @@ class _MemoryTrainingState extends State<MemoryTraining> {
     } else {
       showSequence();
     }
+  }
+
+  void showNextExerciseNotification() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Good Job!"),
+          content: const Text("Let's move to the next exercise."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -196,6 +220,21 @@ class _MemoryTrainingState extends State<MemoryTraining> {
                   label: const Text("Generate New Sequence"),
                 ),
                 const SizedBox(height: 20),
+                if (showNextButton) // Conditional rendering for the Next button
+                  ElevatedButton(
+                    onPressed: () {
+                      showNextExerciseNotification();
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PhysicalPractice(),
+                          ),
+                        );
+                      });
+                    },
+                    child: const Text("Go to Physical Practice"),
+                  ),
               ],
             ),
           ),
@@ -204,12 +243,3 @@ class _MemoryTrainingState extends State<MemoryTraining> {
     );
   }
 }
-
-void main() => runApp(MaterialApp(
-  home: const MemoryTraining(),
-  debugShowCheckedModeBanner: false, // Hide debug banner
-  theme: ThemeData(
-    primarySwatch: Colors.blue,
-    visualDensity: VisualDensity.adaptivePlatformDensity,
-  ),
-));
