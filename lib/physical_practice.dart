@@ -16,7 +16,7 @@ class _PhysicalPracticeState extends State<PhysicalPractice> {
     super.initState();
     _controller = YoutubePlayerController(
       initialVideoId: YoutubePlayer.convertUrlToId(
-          "https://www.youtube.com/watch?v=Z-qjNxy263Y")!,
+          "https://www.youtube.com/watch?v=OvICfrfnnxA")!,
       flags: const YoutubePlayerFlags(
         autoPlay: false,
         mute: false,
