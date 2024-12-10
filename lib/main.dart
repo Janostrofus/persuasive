@@ -24,6 +24,8 @@ class MindfulnessApp extends StatelessWidget {
 }
 
 class MainMenu extends StatelessWidget {
+  const MainMenu({super.key});
+
   @override
   Widget build(BuildContext context) {
     final List<ExerciseTile> exercises = [

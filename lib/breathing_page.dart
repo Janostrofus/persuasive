@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'progressive_muscle_relaxation.dart';
+import 'main.dart'; // Import MainMenu
 
 class BreathingPage extends StatefulWidget {
   const BreathingPage({super.key});
@@ -15,18 +16,17 @@ class _BreathingPageState extends State<BreathingPage>
   late Animation<double> _animation;
   late bool _isAnimating = false;
   String _breathingText = 'Start';
-  bool _showNextButton = false; // Controls visibility of the next exercise button
-  Timer? _timer; // Timer for showing the button
+  bool _showNextButton = false;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 10), // Inhale, hold, exhale cycle
+      duration: const Duration(seconds: 10),
       vsync: this,
     );
 
-    // Animation for growing/shrinking ball
     _animation = Tween<double>(begin: 200, end: 300).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
@@ -47,7 +47,6 @@ class _BreathingPageState extends State<BreathingPage>
       }
     });
 
-    // Show instructions popup on first load
     WidgetsBinding.instance.addPostFrameCallback((_) => _showInstructions());
   }
 
@@ -58,7 +57,6 @@ class _BreathingPageState extends State<BreathingPage>
     });
     _controller.forward();
 
-    // Start timer for showing the next exercise button
     _timer = Timer(const Duration(minutes: 1), () {
       setState(() => _showNextButton = true);
       _showPopup("Good Job! Let's go to the next exercise.");
@@ -71,7 +69,7 @@ class _BreathingPageState extends State<BreathingPage>
       _breathingText = 'Start';
     });
     _controller.stop();
-    _timer?.cancel(); // Cancel timer if the user stops the exercise
+    _timer?.cancel();
   }
 
   void _showInstructions() {
@@ -197,6 +195,17 @@ class _BreathingPageState extends State<BreathingPage>
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => MainMenu()),
+                (route) => false,
+          );
+        },
+        child: const Icon(Icons.home),
+        tooltip: 'Go to Home',
       ),
     );
   }

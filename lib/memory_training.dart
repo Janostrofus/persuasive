@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'main.dart'; // Import your MainMenu class
 import 'physical_practice.dart'; // Import the PhysicalPractice page
 
 class MemoryTraining extends StatefulWidget {
@@ -239,6 +240,17 @@ class _MemoryTrainingState extends State<MemoryTraining> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => MainMenu()),
+                (route) => false,
+          );
+        },
+        child: const Icon(Icons.home),
+        tooltip: 'Go to Home',
       ),
     );
   }

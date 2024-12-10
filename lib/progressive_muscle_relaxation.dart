@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'memory_training.dart'; // Import your MemoryTraining page here
+import 'memory_training.dart';
+import 'main.dart'; // Import MainMenu here
 
 class ProgressiveMuscleRelaxation extends StatefulWidget {
   const ProgressiveMuscleRelaxation({super.key});
@@ -103,7 +104,7 @@ class _ProgressiveMuscleRelaxationState
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const MemoryTraining(), // Navigate to the correct page
+        builder: (context) => const MemoryTraining(),
       ),
     );
   }
@@ -141,7 +142,7 @@ class _ProgressiveMuscleRelaxationState
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
-            if (_showNextExerciseButton) // Conditionally show the button
+            if (_showNextExerciseButton)
               ElevatedButton(
                 onPressed: _navigateToMemoryTraining,
                 child: const Text("Go to Memory Training"),
@@ -154,6 +155,17 @@ class _ProgressiveMuscleRelaxationState
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => MainMenu()),
+                (route) => false,
+          );
+        },
+        child: const Icon(Icons.home),
+        tooltip: 'Go to Home',
       ),
     );
   }
