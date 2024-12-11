@@ -18,7 +18,7 @@ class MindfulnessApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainMenu(),
+      home: const MainMenu(),
     );
   }
 }
@@ -36,7 +36,7 @@ class MainMenu extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => BreathingPage()),
+            MaterialPageRoute(builder: (context) => const BreathingPage()),
           );
         },
       ),
@@ -47,7 +47,7 @@ class MainMenu extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ProgressiveMuscleRelaxation()),
+            MaterialPageRoute(builder: (context) => const ProgressiveMuscleRelaxation()),
           );
         },
       ),
@@ -58,7 +58,7 @@ class MainMenu extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => MemoryTraining()),
+            MaterialPageRoute(builder: (context) => const MemoryTraining()),
           );
         },
       ),
@@ -69,7 +69,7 @@ class MainMenu extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => PhysicalPractice()),
+            MaterialPageRoute(builder: (context) => const PhysicalPractice()),
           );
         },
       ),
@@ -105,7 +105,7 @@ class ExerciseTile extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  ExerciseTile({super.key, required this.title, required this.icon, required this.color, required this.onTap});
+  const ExerciseTile({super.key, required this.title, required this.icon, required this.color, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

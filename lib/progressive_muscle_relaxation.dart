@@ -160,12 +160,12 @@ class _ProgressiveMuscleRelaxationState
         onPressed: () {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => MainMenu()),
+            MaterialPageRoute(builder: (context) => const MainMenu()),
                 (route) => false,
           );
         },
-        child: const Icon(Icons.home),
         tooltip: 'Go to Home',
+        child: const Icon(Icons.home),
       ),
     );
   }
